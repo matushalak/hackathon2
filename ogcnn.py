@@ -89,6 +89,51 @@ class Cnn(nn.Module):  # We are defining to pytorch that we are building a model
         # x = torch.clamp(x, min=1, max=5)
         return x
 
+# Define the CNN model (same as used during training)
+class Cnn8(torch.nn.Module):
+    def __init__(self, in_size=(8, 8, 1), targets=2, filter_size=64, padding=1, kernel_conv=3, hiddenlayer=512):
+        super().__init__()
+        self.filter_size = filter_size
+        self.kernel_conv = kernel_conv
+        self.padding = padding
+        self.hiddenlayer = hiddenlayer
+
+        self.input_layer = torch.nn.Conv2d(
+            in_channels=in_size[-1], out_channels=self.filter_size, kernel_size=self.kernel_conv, padding=self.padding)
+        self.relu = torch.nn.ReLU()
+
+        self.maxpool1 = torch.nn.MaxPool2d(kernel_size=2, stride=2)
+        self.layer2 = torch.nn.Conv2d(in_channels=self.filter_size, out_channels=self.filter_size * 2,
+                                      kernel_size=self.kernel_conv, padding=self.padding)
+        self.maxpool2 = torch.nn.MaxPool2d(kernel_size=2, stride=2)
+        self.layer3 = torch.nn.Conv2d(in_channels=self.filter_size * 2, out_channels=self.filter_size * 4,
+                                      kernel_size=self.kernel_conv, padding=self.padding)
+        self.maxpool3 = torch.nn.MaxPool2d(kernel_size=2, stride=2)
+
+        self.fc1 = torch.nn.Linear(in_features=self.filter_size * 4 * (in_size[0] // 8) * (in_size[1] // 8),
+                                   out_features=self.hiddenlayer)
+        self.fc2 = torch.nn.Linear(in_features=self.hiddenlayer, out_features=targets)
+
+    def forward(self, x: torch.Tensor):
+        x = self.input_layer(x)
+        x = self.relu(x)
+        x = self.maxpool1(x)
+
+        x = self.layer2(x)
+        x = self.relu(x)
+        x = self.maxpool2(x)
+
+        x = self.layer3(x)
+        x = self.relu(x)
+        x = self.maxpool3(x)
+
+        x = x.view(x.size(0), -1)  # Flatten
+
+        x = self.fc1(x)
+        x = self.relu(x)
+        x = self.fc2(x)
+        return x
+
 
 class CFMS(Dataset):
 
@@ -125,9 +170,11 @@ def r2_score(y_true, y_pred):
     return r2
 
 
-def main(batch_size=64, device="mps", lr=1e-3, epochs=200, in_size=(32, 32, 1)):
+
+
+def main(batch_size=64, device="mps", lr=1e-3, epochs=200, in_size=(8, 8, 1)):
     torch.set_num_threads(8)
-    name_model = f"OGcnn1not3_{batch_size}_{lr}_{epochs}epochs_512hiddenlayers"
+    name_model = f"8x8{batch_size}_{lr}_{epochs}epochs_512hiddenlayers"
     wandb.init(
         project="Hackaton",
         name=name_model,
@@ -170,7 +217,7 @@ def main(batch_size=64, device="mps", lr=1e-3, epochs=200, in_size=(32, 32, 1)):
     #     shuffle=False,
     # )
 
-    model = Cnn()
+    model = Cnn8()
     model.to(device)
 
     wandb.watch(model)
@@ -282,7 +329,8 @@ def main(batch_size=64, device="mps", lr=1e-3, epochs=200, in_size=(32, 32, 1)):
 
     save_to = "./models_og"
     os.makedirs(save_to, exist_ok=True)
-    torch.save(model.state_dict(), f"{save_to}/newmodel_justvali.pt")
+    torch.save(model.state_dict(), f"{save_to}/{name_model}.pt")
+
 
 
 if __name__ == "__main__":

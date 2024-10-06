@@ -11,7 +11,7 @@ from scipy.io import loadmat
 import os
 
 def preprocess():
-    dpath = "/Users/olejurgensen/Documents/DREAMER-dataset/DREAMER.mat"
+    dpath = os.getcwd() + '/DREAMER.mat'
     mat = loadmat(dpath)
     DREAMER = mat['DREAMER'][0]
 
