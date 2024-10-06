@@ -3,14 +3,18 @@ import time
 import numpy as np
 import os
 
-def data_retrieval():
+def check_num_files():
+    savepath = os.path.dirname(__file__)
+    num_files = sum([1 if 'raw_data' in f else 0 for f in os.listdir(savepath)])
+    return num_files
+
+def data_retrieval(duration:int):
+    num_files = check_num_files()
+
     while True:
         print("Unicorn Recorder UDP Receiver Example")
         print("----------------------------")
         print()
-
-        savepath = os.path.dirname(__file__)
-        current_csv_num = sum([1 if 'raw_data' in f else 0 for f in os.listdir(savepath)]) 
 
         try:
             # Define the destination port
@@ -23,7 +27,7 @@ def data_retrieval():
                 udp_socket.bind((ip, port))
 
                 count = 0
-                duration = 8  # duration of one data set in seconds (kinda)
+                duration = dur  # duration of one data set in seconds (kinda)
                 elec = 8
                 sf = 250
                 data_array_raw = np.empty((sf*duration, elec))
@@ -50,11 +54,9 @@ def data_retrieval():
         finally:
             print("Data retrieval complete!")
 
-        np.save(os.path.join(savepath, f'raw_data{current_csv_num+1}'), data_array_raw.T)
-
-        continue_pull = input('Do you want to retrieve these data? (y/n)')
-        if continue_pull != 'y':
-            return data_array_raw.T
+        np.save(os.path.join(savepath, f'raw_data{num_files+1}'), data_array_raw.T)
+        
+        return data_array_raw.T
 
 if __name__ == "__main__":
     data_retrieval()

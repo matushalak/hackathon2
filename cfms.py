@@ -1,10 +1,6 @@
 import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
 from scipy.signal import hilbert, resample_poly, butter, filtfilt
-from preprocess_and_segmentation import preprocess
 import os
-import time
 
 # Updated CFMS code
 
@@ -27,9 +23,12 @@ def bandpass_filter(data, lowcut=30, highcut=50, fs=250, order=4):
     y = filtfilt(b, a, data, axis=-1)
     return y
 
-def get_data():
+def get_data(eeg_stream = 'raw_data1.npy'):
     # eeg = preprocess()
-    eeg = np.load('raw_data1.npy').T
+    if isinstance(eeg_stream, str):
+        eeg = np.load('raw_data1.npy').T
+    else:
+        eeg = eeg_stream
     eeg = np.reshape(eeg, (1, eeg.shape[0], -1))
     gamma_eeg = bandpass_filter(eeg) # gamma filter
     downsampled_eeg = downsample_to128(gamma_eeg)
@@ -96,10 +95,9 @@ def construct_cfms(eeg, cfm_method1, cfm_method2):
     cfm_fused = (cfm1 + cfm2) / 2
     return cfm_fused
 
-def main():
-    start = time.time()
+def cfm_main(eeg_stream):
     os.makedirs("./our_brain_cfms", exist_ok=True)
-    eeg = get_data()
+    eeg = get_data(eeg_stream)
     cfms = construct_cfms(eeg, correlation_cfm, phase_lock_cfm)
 
     num_cfm = sum([1 if 'cfm' in f else 0 for f in os.listdir('our_brain_cfms')])
@@ -107,11 +105,11 @@ def main():
     # EEG: (20884, 14, 1024)
     # CFMS: (20884, 14, 1024)
     print(f'Dimensions check: EEG {eeg.shape}, CFMS {cfms.shape}')
+    return cfms
     # sns.heatmap(cfms[np.random.randint(cfms.shape[0]),:,:])
-    sns.heatmap(cfms[0,:,:])
-    plt.show()
-    print(time.time() - start)
-    breakpoint()
+    # sns.heatmap(cfms[0,:,:])
+    # plt.show()
+    # breakpoint()
 
 if __name__ == "__main__":
-    main()
+    cfm_main()
