@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from scipy.signal import hilbert, resample_poly, butter, filtfilt
 from preprocess_and_segmentation import preprocess
 import os
+import time
 
 # Updated CFMS code
 
@@ -96,6 +97,7 @@ def construct_cfms(eeg, cfm_method1, cfm_method2):
     return cfm_fused
 
 def main():
+    start = time.time()
     os.makedirs("./our_brain_cfms", exist_ok=True)
     eeg = get_data()
     cfms = construct_cfms(eeg, correlation_cfm, phase_lock_cfm)
@@ -108,6 +110,7 @@ def main():
     # sns.heatmap(cfms[np.random.randint(cfms.shape[0]),:,:])
     sns.heatmap(cfms[0,:,:])
     plt.show()
+    print(time.time() - start)
     breakpoint()
 
 if __name__ == "__main__":
