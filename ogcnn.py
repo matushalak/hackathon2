@@ -195,7 +195,7 @@ def main(batch_size=64, device="mps", lr=1e-3, epochs=200, in_size=(8, 8, 1)):
     # Load the training set
     dataset = CFMS(transform=transform)
     # Define the sizes for train, validation, and test sets
-    train_size = int(0.7 * len(dataset))  # 80% for training
+    train_size = int(0.8 * len(dataset))  # 80% for training
     val_size = len(dataset) - train_size  # 10% for validation
     # test_size = len(dataset) - train_size - val_size  # 10% for test
 
@@ -328,7 +328,8 @@ def main(batch_size=64, device="mps", lr=1e-3, epochs=200, in_size=(8, 8, 1)):
     # Save the model
 
     save_to = "./models_og"
-    os.makedirs(save_to, exist_ok=True)
+    if not os.path.exists(save_to):
+        os.makedirs(save_to, exist_ok=True)
     torch.save(model.state_dict(), f"{save_to}/{name_model}.pt")
 
 

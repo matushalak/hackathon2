@@ -159,8 +159,8 @@ def main(write=True):
     labels = np.concatenate(
         (np.expand_dims(np.arange(labels.shape[0]), axis=-1), labels), axis=1
     )
-    pd.DataFrame(labels, columns=["imgs_num", "arousal", "valenca"]).to_csv(
-        "./data/labels.csv", index=False
+    pd.DataFrame(labels, columns=["imgs_num", "arousal", "valence"]).to_csv(
+        "./data_og/labels.csv", index=False
     )
 
     # EEG: (20884, 14, 1024)
