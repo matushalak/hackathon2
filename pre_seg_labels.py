@@ -11,7 +11,7 @@ from scipy.io import loadmat
 import os
 
 def preprocess():
-    dpath = "/Users/olejurgensen/Documents/DREAMER-dataset/DREAMER.mat"
+    dpath = os.getcwd() + '/DREAMER.mat'
     mat = loadmat(dpath)
     DREAMER = mat['DREAMER'][0]
 
@@ -121,14 +121,17 @@ def preprocess():
             # rep label for number of epochs extracted from clip
             film_label_repeated = np.tile(film_label, (len(epoch_data), 1))
             # append labels
-            labels.extend(film_label_repeated)
-            labels = np.array(labels)
+            labels.append(film_label_repeated)
             
             # append cfm with epoch data
             cfm_array.append(epoch_data)
     
     # stack into 3D array: SEGMENTSfromtrials : ELECTODE(s) : timestamps
     cfm_array = np.vstack(cfm_array)
+    labels = np.vstack(labels)
 
     return cfm_array, labels # feel free to change formatting here
     
+if __name__ == '__main__':
+    cfm_array, labels = preprocess()
+    breakpoint()
