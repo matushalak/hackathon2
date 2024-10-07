@@ -1,6 +1,7 @@
 from visualize_circle2 import LiveValenceArousalPlot
 import matplotlib.pyplot as plt
+import time
 
 live_plot = LiveValenceArousalPlot()
-live_plot.set_valence_arousal(1,5)
-plt.show()
+live_plot.start()
+
