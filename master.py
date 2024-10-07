@@ -1,6 +1,7 @@
 import random
 import os
 import threading
+import numpy as np
 from testing import predict_single_cfm
 from cfms import cfm_main
 from unic_data_pull import data_retrieval
@@ -48,6 +49,9 @@ def main():
             print(f'Current run: {run_count}')
             print(valence, arousal)
             run_count += 1
+
+        # Write the current valence and arousal values to a text file
+        np.savetxt(os.path.join(master_path, 'val_ar.txt'), [[valence, arousal]], fmt='%.2f', header='Valence, Arousal')
 
     print("Data pulling stopped.")
     print("Stored values:", stored_values)  # Print the stored values at the end

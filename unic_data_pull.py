@@ -3,13 +3,13 @@ import numpy as np
 import os
 
 def check_num_files():
-    savepath = os.path.dirname(__file__)
+    savepath = r'C:\Users\andre\OneDrive\Documents\Personal\Hackathon\raw_data'
     num_files = sum([1 if 'raw_data' in f else 0 for f in os.listdir(savepath)])
     return num_files
 
 def data_retrieval(duration:int):
     num_files = check_num_files()
-    savepath = os.path.dirname(__file__)
+    # savepath = os.path.dirname(__file__)
 
     while True:
         print("Unicorn Recorder UDP Receiver Example")
@@ -54,7 +54,7 @@ def data_retrieval(duration:int):
         finally:
             print("Data retrieval complete!")
 
-        np.save(os.path.join(savepath, f'raw_data{num_files+1}'), data_array_raw.T)
+        np.save(os.path.join(f'./raw_data/raw_data{num_files+1}'), data_array_raw.T)
         
         return data_array_raw.T
 

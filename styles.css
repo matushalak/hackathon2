@@ -1,0 +1,104 @@
+.stApp {
+    background: linear-gradient(to top, #e5ffd6,
+        #a6ffe1,
+        #c2d0ff,
+        #c1f8fb); 
+        /* ##ff7e5f, #feb47b, #86a8e7, #91eae4 */
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    z-index: -1;
+        /* Ensures that the background stays behind other elements */
+}
+
+@keyframes gradientBG {
+    0% {
+            background-position: 50% 100%;
+        }
+    
+    50% {
+            background-position: 50% 0%;
+        }
+    
+    100% {
+            background-position: 50% 100%;
+        }
+}
+
+.stTitle {
+    color:#f5f5dc;
+    font-family: 'Arial Black', Gadget, sans-serif;
+    font-size: 3em;
+}
+
+
+/* Set header background color to creamy pale white */
+.st-emotion-cache-1avcm0n {
+    background-color: #f5f5dc00;
+    /* Creamy pale white color */
+}
+
+.st-emotion-cache-139wi93{
+        background-color: #f5f5dc;
+        /* Creamy pale white color */
+    }
+.st-emotion-cache-vj1c9o{
+        background-color: #f5f5dc;
+        /* Creamy pale white color */
+    }
+.st-emotion-cache-4zpzjl{
+        color: #00000096;
+    } 
+    /* .eeusbqq1 */
+
+.st-emotion-cache-4zpzjl {
+        background-color: #b463ff96;
+    }
+
+.st-emotion-cache-jmw8un{
+        background-color: #edaee9;
+    }
+
+
+/* .st-emotion-cache-139wi93,
+.st-emotion-cache-0,
+.st-emotion-cache-1wmy9hl,
+.st-emotion-cache-1n76uvr,
+.st-emotion-cache-1aege4m,
+.st-emotion-cache-1taab8,
+.st-emotion-cache-s1k4sy,
+.st-emotion-cache-1lm6gnd,
+.st-emotion-cache-f4ro0r {
+    background-color: #f5dcf5;
+    color: #f5dcf5;
+}  */
+
+
+/* .st-emotion-cache-1621d17, 
+.st-emotion-cache-1lm6gnd 
+.st-emotion-cache-s1k4sy
+.st-emotion-cache-0{
+        background-color: #00ff15;
+        color: #18de11;
+    } */
+
+/* Set the background color of the textarea to pink */
+.st-b1 textarea {
+    background-color: rgb(246, 252, 223);
+    /* Set the background color to pink */
+    color: black;
+    /* Optional: Set text color to black for better readability */
+    border-color: #d0920b34;
+    /* Optional: Adjust border color if needed */
+}
+
+
+.stChatMessage {
+        background-color: rgba(234, 255, 0, 0.132);
+        /* Set the background color to pink */
+        color: rgba(223, 223, 221, 0.153);
+        color-scheme: light;
+        /* Optional: Set text color to black for better readability */
+    }
+
+
+/* st-emotion-cache-janbn0 eeusbqq4" */
