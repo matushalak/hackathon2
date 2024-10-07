@@ -5,63 +5,16 @@ from matplotlib.patches import Circle
 import threading
 import time
 
-# Set up the figure and axis
-fig, ax = plt.subplots(figsize=(10, 10))
-
-# Set limits and aspect ratio
-ax.set_xlim(0.5, 5.5)
-ax.set_ylim(0.5, 5.5)
-ax.set_aspect('equal')
-
-# Adjust the spines to cross at (3,3)
-ax.spines['left'].set_position(('data', 3))
-ax.spines['bottom'].set_position(('data', 3))
-ax.spines['right'].set_color('none')
-ax.spines['top'].set_color('none')
-
-# Set labels
-ax.set_xlabel('Valence', fontsize=14)
-ax.set_ylabel('Arousal', fontsize=14)
-
-# Define colormaps for each quadrant
-quadrant_cmaps = {
-    'Q1': plt.cm.Greens,
-    'Q2': plt.cm.Reds,
-    'Q3': plt.cm.Blues,
-    'Q4': plt.cm.Purples
-}
-
-# Initialize variables
-num_points = 200
-interval_ms = 20  # Interval between frames in milliseconds
-frames_per_cycle = int(4000 / interval_ms)  # Number of frames per 4-second cycle
-
-# Initialize valence and arousal with default values
-valence = 3.0
-arousal = 3.0
-
-# Lock for thread safety
-valence_arousal_lock = threading.Lock()
-
 # Function to update valence and arousal externally
 def set_valence_arousal(new_valence, new_arousal):
-    global valence, arousal
-    with valence_arousal_lock:
-        valence = new_valence
-        arousal = new_arousal
+    global valence, arousal, positions
+    valence = new_valence
+    arousal = new_arousal
     print(f"Valence and arousal updated to Valence: {valence}, Arousal: {arousal}")
-
-# Generate initial random data
-def generate_positions():
-    with valence_arousal_lock:
-        v = valence
-        a = arousal
-    valences = np.random.normal(v, 0.25, num_points)
-    arousals = np.random.normal(a, 0.25, num_points)
-    return np.column_stack((valences, arousals))
-
-positions = generate_positions()
-current_frame = 0
+    # & associated random data
+    valences = np.random.normal(valence, 0.25, 50)
+    arousals = np.random.normal(arousal, 0.25, 50)
+    positions =  np.column_stack((valences, arousals))
 
 # Function to determine color based on quadrant
 def get_cmap(v, a):
@@ -83,16 +36,6 @@ def animate(frame):
     # Update current frame
     current_frame = frame % frames_per_cycle
 
-    # Check if it's time to update data
-    if current_frame == 0:
-        # Automatically generate new random valence and arousal
-        with valence_arousal_lock:
-            valence = np.random.uniform(1, 5)
-            arousal = np.random.uniform(1, 5)
-            print(f"Automatically updated to Valence: {valence:.2f}, Arousal: {arousal:.2f}")
-        # Generate new data using current valence and arousal
-        positions = generate_positions()
-
     # Clear only the plotted data
     plt.cla()       # Clears line plots
 
@@ -102,7 +45,7 @@ def animate(frame):
     ax.add_patch(circle)
 
     # Get positions up to current frame
-    idx = current_frame % num_points
+    idx = current_frame % 50
     current_positions = positions[:idx+1]
     v, a = positions[idx]
 
@@ -131,9 +74,8 @@ def animate(frame):
     ax.scatter(v, a, s=sizes[-1], color=cmap(0.9), edgecolors='black', linewidths=1)
 
     # Set the title with current valence and arousal
-    with valence_arousal_lock:
-        title_valence = valence
-        title_arousal = arousal
+    title_valence = valence
+    title_arousal = arousal
     ax.set_title(f'Valence: {title_valence:.2f}, Arousal: {title_arousal:.2f}', fontsize=16)
 
     # Ensure spines remain at (3,3)
@@ -151,21 +93,40 @@ def animate(frame):
 
     plt.tight_layout()
 
-# Create animation
-ani = animation.FuncAnimation(fig, animate, frames=100000, interval=interval_ms, repeat=True)
+def start_plot(v, a):
+    # Set up the figure and axis
+    global fig, ax
+    fig, ax = plt.subplots(figsize=(10, 10))
+    
+    set_valence_arousal(v, a)
+    
+    # Define colormaps for each quadrant
+    global frames_per_cycle, quadrant_cmaps
+    quadrant_cmaps = {
+        'Q1': plt.cm.Greens,
+        'Q2': plt.cm.Reds,
+        'Q3': plt.cm.Blues,
+        'Q4': plt.cm.Purples
+    }
 
-# Example function to modify valence and arousal externally
-def external_update():
-    # Wait for some time and then update valence and arousal
-    time.sleep(10)  # Wait for 10 seconds
-    set_valence_arousal(4.5, 2.5)  # Update to new values
-    # You can add more updates here if desired
-    time.sleep(10)
-    set_valence_arousal(2.0, 4.0)
+    # Initialize variables
+    num_points = 200
+    interval_ms = 20  # Interval between frames in milliseconds
+    frames_per_cycle = int(4000 / interval_ms)  # Number of frames per 4-second cycle
 
-# Start the external update thread
-update_thread = threading.Thread(target=external_update, daemon=True)
-update_thread.start()
 
-# Show the plot
-plt.show()
+    # Create animation
+    ani = animation.FuncAnimation(fig, animate, frames=1000, interval=interval_ms, repeat=True)
+    # Use plt.pause() to make it non-blocking
+    plt.draw()
+    plt.pause(0.001)
+
+def plot_live(v, a):
+    start_plot(v, a)
+    start = time.time()
+    while time.time() - start < 4:
+        plt.pause(0.001)  # Small pause to update the plot
+    plt.close()
+
+for i, j in zip([1, 5, 5, 1], [5, 1, 3, 3]):
+    plot_live(i, j)
