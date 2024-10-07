@@ -1,5 +1,4 @@
 import socket
-import time
 import numpy as np
 import os
 
@@ -10,6 +9,7 @@ def check_num_files():
 
 def data_retrieval(duration:int):
     num_files = check_num_files()
+    savepath = os.path.dirname(__file__)
 
     while True:
         print("Unicorn Recorder UDP Receiver Example")
@@ -27,10 +27,10 @@ def data_retrieval(duration:int):
                 udp_socket.bind((ip, port))
 
                 count = 0
-                duration = dur  # duration of one data set in seconds (kinda)
+                dur = duration # duration of one data set in seconds (kinda)
                 elec = 8
                 sf = 250
-                data_array_raw = np.empty((sf*duration, elec))
+                data_array_raw = np.empty((sf*dur, elec))
 
                 # Acquisition loop
                 while True:
@@ -41,8 +41,8 @@ def data_retrieval(duration:int):
                         count += 1
 
                     # Check if specified duration has passed
-                    if count == sf*duration: # sf*duration = 2000 data points
-                        print(f"{duration} seconds elapsed. Total data received: {count}")
+                    if count == sf*dur: # sf*duration = 2000 data points
+                        print(f"{dur} seconds elapsed. Total data received: {count}")
                         break
                     
         except socket.error as sock_ex:
